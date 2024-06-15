@@ -45,9 +45,8 @@ public class UserMealsUtil {
         for (int j = 0; j < meals.size(); j++) {
             LocalDate date = meals.get(j).getDateTime().toLocalDate();
             LocalTime time = meals.get(j).getDateTime().toLocalTime();
-
             if (isBetweenHalfOpen(time, startTime, endTime)) {
-                if (map.get(date) > caloriesPerDay && isBetweenHalfOpen(time, startTime, endTime)) {
+                if (map.get(date) > caloriesPerDay) {
                     excess = true;
                 } else {
                     excess = false;
