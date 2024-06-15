@@ -3,11 +3,13 @@ package ru.javawebinar.topjava.util;
 import ru.javawebinar.topjava.model.UserMeal;
 import ru.javawebinar.topjava.model.UserMealWithExcess;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.Month;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
+
+import static ru.javawebinar.topjava.util.TimeUtil.isBetweenHalfOpen;
 
 public class UserMealsUtil {
     public static void main(String[] args) {
@@ -29,7 +31,31 @@ public class UserMealsUtil {
 
     public static List<UserMealWithExcess> filteredByCycles(List<UserMeal> meals, LocalTime startTime, LocalTime endTime, int caloriesPerDay) {
         // TODO return filtered list with excess. Implement by cycles
-        return null;
+        List<UserMealWithExcess> mealWithExcess = new ArrayList<>();
+        Map<LocalDate, Integer> map = new HashMap<LocalDate, Integer>();
+        for (int i = 0; i < meals.size(); i++) {
+            LocalDate date = meals.get(i).getDateTime().toLocalDate();
+            if (map.containsKey(date)) {
+                map.put(date, map.get(date) + meals.get(i).getCalories());
+            } else {
+                map.put(date, meals.get(i).getCalories());
+            }
+        }
+        Boolean excess = false;
+        for (int j = 0; j < meals.size(); j++) {
+            LocalDate date = meals.get(j).getDateTime().toLocalDate();
+            LocalTime time = meals.get(j).getDateTime().toLocalTime();
+
+            if (isBetweenHalfOpen(time, startTime, endTime)) {
+                if (map.get(date) > caloriesPerDay && isBetweenHalfOpen(time, startTime, endTime)) {
+                    excess = true;
+                } else {
+                    excess = false;
+                }
+                mealWithExcess.add(new UserMealWithExcess(meals.get(j).getDateTime(), meals.get(j).getDescription(), meals.get(j).getCalories(), excess));
+            }
+        }
+        return mealWithExcess;
     }
 
     public static List<UserMealWithExcess> filteredByStreams(List<UserMeal> meals, LocalTime startTime, LocalTime endTime, int caloriesPerDay) {
